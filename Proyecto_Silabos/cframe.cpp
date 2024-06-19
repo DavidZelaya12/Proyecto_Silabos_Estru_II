@@ -12,7 +12,7 @@ cframe::cframe(QWidget *parent)
 {
     ui->setupUi(this);
     //CantInventario = obtenerPrimaryKey();
-    // setupDatabase();
+    setupDatabase();
     //createTable();
     //insertValues();
     //queryTable();
@@ -32,10 +32,10 @@ cframe::~cframe()
 void cframe::setupDatabase()
 {
     QSqlDatabase db = QSqlDatabase::addDatabase("QODBC");
-    QString serverName = "copecoserver.database.windows.net";
-    QString dbName = "copecoDB";
-    QString username = "eladmin";
-    QString password = "Copeco123";
+    QString serverName = "unitecsilabos.database.windows.net";
+    QString dbName = "silabos";
+    QString username = "AdminSilabos";
+    QString password = "Silabos123";
 
     QString connectionString = QString("Driver={ODBC Driver 18 for SQL Server};Server=tcp:%1,1433;Database=%2;Uid=%3;"
                                        "Pwd=%4;Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;")

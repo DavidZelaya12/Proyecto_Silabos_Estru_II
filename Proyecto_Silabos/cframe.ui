@@ -44,15 +44,15 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>1001</width>
-        <height>601</height>
+        <width>1021</width>
+        <height>641</height>
        </rect>
       </property>
       <property name="text">
        <string/>
       </property>
       <property name="pixmap">
-       <pixmap resource="Imagenes.qrc">:/Imagenes/Black and Red Minimalist Modern Registration Gym Website Prototype (1).png</pixmap>
+       <pixmap resource="Imagenes.qrc">:/Imagenes/FondoSilabos.png</pixmap>
       </property>
       <property name="scaledContents">
        <bool>true</bool>
@@ -61,8 +61,8 @@
      <widget class="QLineEdit" name="txtusuario">
       <property name="geometry">
        <rect>
-        <x>120</x>
-        <y>280</y>
+        <x>130</x>
+        <y>290</y>
         <width>251</width>
         <height>31</height>
        </rect>
@@ -117,7 +117,7 @@
      <widget class="QLineEdit" name="txcontrasea">
       <property name="geometry">
        <rect>
-        <x>120</x>
+        <x>130</x>
         <y>360</y>
         <width>251</width>
         <height>31</height>
@@ -176,8 +176,8 @@
      <widget class="QPushButton" name="botonlogearse">
       <property name="geometry">
        <rect>
-        <x>110</x>
-        <y>460</y>
+        <x>120</x>
+        <y>430</y>
         <width>211</width>
         <height>41</height>
        </rect>
@@ -193,9 +193,9 @@
       <property name="geometry">
        <rect>
         <x>340</x>
-        <y>460</y>
+        <y>440</y>
         <width>41</width>
-        <height>41</height>
+        <height>31</height>
        </rect>
       </property>
       <property name="text">
