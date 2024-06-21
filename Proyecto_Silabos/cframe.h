@@ -24,12 +24,27 @@ class cframe : public QMainWindow
 public:
     cframe(QWidget *parent = nullptr);
     ~cframe();
+    void LogIn();
+    void RegistrarEmpleados();
+    std::string LeerToken();
+    void MostrarUsuarios();
 
 private slots:
+
+    void on_botonlogearse_clicked();
+
+    void on_TokenBtn_clicked();
+
+    void on_CerrarSesion_clicked();
+
+    void on_CerrarSesion_2_clicked();
 
 private:
     Ui::cframe *ui;
     void setupDatabase();
+    void createTable();
+    Token a;
+    void insertValues();
 
 };
 
