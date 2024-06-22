@@ -5,6 +5,7 @@
 #include <iomanip>
 #include <sstream>
 #include <QSqlError>
+#include <QFileDialog>
 
 cframe::cframe(QWidget *parent)
     : QMainWindow(parent)
@@ -233,4 +234,50 @@ void cframe::on_CerrarSesion_2_clicked()
         //LimpiarEspacios();
     }
 }
+
+
+void cframe::on_cb_facultades_currentIndexChanged(int index)
+{
+    QStringList items;
+    ui->cb_carreras->clear();
+    if(index == 1){
+        items<<"Biomedica"<<"Ciencia de datos e inteligencia artificial"<<"Civil"<<"Energia"<<"Industrial y de sistemas"<<"Mecatronica"<<"Sistemas Computacionales"<<"Telecomunicaciones y electronica";
+        ui->cb_carreras->addItems(items);
+    }else if(index == 2){
+        items<<"Administracion de la hospitalidad y el tursimo"<<"Administracion industrial e inteligencia de negocios"<<"Administracion industrial y emprendimiento"<<"Industrial y operaciones"<<"Derecho"<<"Finanzas y Economia"<<"Mercadotecnia y negocios internacionales"<<"Relaciones internacionales";
+        ui->cb_carreras->addItems(items);
+    }else if(index == 3){
+        items<<"Animacion digital y diseño interactivo"<<"Arquitectura"<<"Comunicacion audiovisual y publicitaria"<<"Diseno de modas"<<"Diseno Grafico"<<"Gastronomia";
+        ui->cb_carreras->addItems(items);
+    }
+}
+
+
+void cframe::on_btn_buscar_archivo_clicked()
+{
+    QString filePath = QFileDialog::getOpenFileName(this, "Seleccionar archivo PDF", QDir::homePath(), "Archivos PDF (*.pdf)");
+
+    if (!filePath.isEmpty()) {
+        // Obtener el nombre del archivo
+        QFileInfo fileInfo(filePath);
+        QString fileName = fileInfo.fileName();
+
+        // Definir la expresión regular para validar el nombre del archivo
+        QRegularExpression rx("^Clase\\d{4}\\.pdf$", QRegularExpression::CaseInsensitiveOption); // Formato: Clase1234.pdf
+
+        // Validar el nombre del archivo según la expresión regular
+        if (!rx.match(fileName).hasMatch()) {
+            QMessageBox::critical(this, "Error", "El nombre del archivo no cumple con el formato deseado (Clase####.pdf).");
+            return;
+        }
+
+        // Si el nombre del archivo cumple con el formato, puedes continuar con el proceso
+        qDebug() << "Archivo PDF seleccionado:" << filePath;
+        qDebug() << "Nombre del archivo:" << fileName;
+
+        // Mostrar el nombre del archivo en el QLineEdit
+        ui->le_filepath->setText(fileName);
+    }
+}
+
 

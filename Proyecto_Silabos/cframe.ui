@@ -33,7 +33,7 @@
      <enum>Qt::LeftToRight</enum>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="InicioSesion_Tab">
      <attribute name="title">
@@ -282,56 +282,6 @@
          <bool>false</bool>
         </property>
        </widget>
-       <widget class="QLineEdit" name="NombreAgregar">
-        <property name="geometry">
-         <rect>
-          <x>100</x>
-          <y>250</y>
-          <width>261</width>
-          <height>41</height>
-         </rect>
-        </property>
-        <property name="palette">
-         <palette>
-          <active>
-           <colorrole role="Base">
-            <brush brushstyle="SolidPattern">
-             <color alpha="255">
-              <red>239</red>
-              <green>239</green>
-              <blue>239</blue>
-             </color>
-            </brush>
-           </colorrole>
-          </active>
-          <inactive>
-           <colorrole role="Base">
-            <brush brushstyle="SolidPattern">
-             <color alpha="255">
-              <red>239</red>
-              <green>239</green>
-              <blue>239</blue>
-             </color>
-            </brush>
-           </colorrole>
-          </inactive>
-          <disabled>
-           <colorrole role="Base">
-            <brush brushstyle="SolidPattern">
-             <color alpha="255">
-              <red>240</red>
-              <green>240</green>
-              <blue>240</blue>
-             </color>
-            </brush>
-           </colorrole>
-          </disabled>
-         </palette>
-        </property>
-        <property name="frame">
-         <bool>false</bool>
-        </property>
-       </widget>
        <widget class="QPushButton" name="AgregarProducto">
         <property name="geometry">
          <rect>
@@ -393,12 +343,78 @@
          <bool>true</bool>
         </property>
        </widget>
+       <widget class="QComboBox" name="cb_facultades">
+        <property name="geometry">
+         <rect>
+          <x>90</x>
+          <y>180</y>
+          <width>271</width>
+          <height>24</height>
+         </rect>
+        </property>
+        <item>
+         <property name="text">
+          <string/>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>FI</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>FCAS</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>FA&amp;D</string>
+         </property>
+        </item>
+       </widget>
+       <widget class="QComboBox" name="cb_carreras">
+        <property name="geometry">
+         <rect>
+          <x>84</x>
+          <y>260</y>
+          <width>281</width>
+          <height>24</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="btn_buscar_archivo">
+        <property name="geometry">
+         <rect>
+          <x>160</x>
+          <y>390</y>
+          <width>121</width>
+          <height>25</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Buscar archivo</string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="le_filepath">
+        <property name="geometry">
+         <rect>
+          <x>80</x>
+          <y>480</y>
+          <width>291</width>
+          <height>24</height>
+         </rect>
+        </property>
+       </widget>
        <zorder>label_2</zorder>
        <zorder>CodigoAgregar</zorder>
-       <zorder>NombreAgregar</zorder>
        <zorder>AgregarProducto</zorder>
        <zorder>TableInventario</zorder>
        <zorder>CerrarSesion</zorder>
+       <zorder>cb_facultades</zorder>
+       <zorder>cb_carreras</zorder>
+       <zorder>btn_buscar_archivo</zorder>
+       <zorder>le_filepath</zorder>
       </widget>
       <widget class="QWidget" name="tab_2">
        <attribute name="title">

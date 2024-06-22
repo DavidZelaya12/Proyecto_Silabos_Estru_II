@@ -39,6 +39,10 @@ private slots:
 
     void on_CerrarSesion_2_clicked();
 
+    void on_cb_facultades_currentIndexChanged(int index);
+
+    void on_btn_buscar_archivo_clicked();
+
 private:
     Ui::cframe *ui;
     void setupDatabase();
