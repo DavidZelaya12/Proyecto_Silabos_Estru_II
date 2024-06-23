@@ -6,6 +6,7 @@
 #include <sstream>
 #include <QSqlError>
 #include <QFileDialog>
+#include <QMap>
 
 cframe::cframe(QWidget *parent)
     : QMainWindow(parent)
@@ -255,29 +256,53 @@ void cframe::on_cb_facultades_currentIndexChanged(int index)
 
 void cframe::on_btn_buscar_archivo_clicked()
 {
-    QString filePath = QFileDialog::getOpenFileName(this, "Seleccionar archivo PDF", QDir::homePath(), "Archivos PDF (*.pdf)");
+        // Define the map for class codes and their corresponding names
+        QMap<QString, QString> classMap;
+        classMap.insert("CCC104", "ProgramacionI");
+        classMap.insert("CCC105", "ProgramacionII");
+        classMap.insert("CCC208", "ProgramacionIII");
+        // Add more class codes and names as needed
 
-    if (!filePath.isEmpty()) {
-        // Obtener el nombre del archivo
-        QFileInfo fileInfo(filePath);
-        QString fileName = fileInfo.fileName();
+        QString filePath = QFileDialog::getOpenFileName(this, "Seleccionar archivo PDF", QDir::homePath(), "Archivos PDF (*.pdf)");
 
-        // Definir la expresión regular para validar el nombre del archivo
-        QRegularExpression rx("^Clase\\d{4}\\.pdf$", QRegularExpression::CaseInsensitiveOption); // Formato: Clase1234.pdf
+        if (!filePath.isEmpty()) {
+            // Obtener el nombre del archivo
+            QFileInfo fileInfo(filePath);
+            QString fileName = fileInfo.fileName();
 
-        // Validar el nombre del archivo según la expresión regular
-        if (!rx.match(fileName).hasMatch()) {
-            QMessageBox::critical(this, "Error", "El nombre del archivo no cumple con el formato deseado (Clase####.pdf).");
-            return;
+            // Definir la expresión regular para validar el nombre del archivo
+            QRegularExpression rx("^([A-Za-z]+[IV]*)_?(CCC\\d{3})\\.pdf$", QRegularExpression::CaseInsensitiveOption); // Formato: NombreClase_CCC123.pdf
+
+            // Validar el nombre del archivo según la expresión regular
+            QRegularExpressionMatch match = rx.match(fileName);
+            if (!match.hasMatch()) {
+                QMessageBox::critical(this, "Error", "El nombre del archivo no cumple con el formato deseado (NombreClase_CCC###.pdf).");
+                return;
+            }
+
+            // Obtener el nombre de la clase y el código del archivo
+            QString className = match.captured(1).trimmed();
+            QString classCode = match.captured(2);
+
+            // Verificar si el código de la clase existe en el mapa
+            if (!classMap.contains(classCode)) {
+                QMessageBox::critical(this, "Error", "Código de clase no válido.");
+                return;
+            }
+
+            // Verificar si el nombre de la clase coincide con el nombre esperado
+            if (classMap[classCode].compare(className, Qt::CaseInsensitive) != 0) {
+                QMessageBox::critical(this, "Error", "El nombre del archivo no coincide con el código de clase.");
+                return;
+            }
+
+            // Si el nombre del archivo cumple con el formato y el nombre de la clase es correcto, puedes continuar con el proceso
+            qDebug() << "Archivo PDF seleccionado:" << filePath;
+            qDebug() << "Nombre del archivo:" << fileName;
+
+            // Mostrar el nombre del archivo en el QLineEdit
+            ui->le_filepath->setText(fileName);
         }
-
-        // Si el nombre del archivo cumple con el formato, puedes continuar con el proceso
-        qDebug() << "Archivo PDF seleccionado:" << filePath;
-        qDebug() << "Nombre del archivo:" << fileName;
-
-        // Mostrar el nombre del archivo en el QLineEdit
-        ui->le_filepath->setText(fileName);
-    }
 }
 
 
