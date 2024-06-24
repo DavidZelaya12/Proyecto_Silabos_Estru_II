@@ -553,10 +553,23 @@
          </rect>
         </property>
        </widget>
+       <widget class="QPushButton" name="Enviar">
+        <property name="geometry">
+         <rect>
+          <x>650</x>
+          <y>400</y>
+          <width>211</width>
+          <height>41</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>PushButton</string>
+        </property>
+       </widget>
       </widget>
       <widget class="QWidget" name="tab">
        <attribute name="title">
-        <string>Page</string>
+        <string>Dashboard</string>
        </attribute>
        <widget class="QTableWidget" name="TablesEntradas_2">
         <property name="geometry">
