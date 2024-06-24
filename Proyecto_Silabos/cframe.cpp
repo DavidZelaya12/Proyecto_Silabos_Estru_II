@@ -57,6 +57,8 @@ void cframe::LogIn()
                     ui->tabCentral->setCurrentIndex(1);
                     ui->tabCentral->setTabEnabled(0,false);
                     ui->LE_CambiarNombre->setText(QString::fromStdString(nombre));
+                    ui->LE_nombre->setText(QString::fromStdString(nombre));
+                    ui->LE_Cargo->setText(QString::fromStdString(query.value(3).toString().toStdString()).toUpper());
                     return;
                 }
             }
@@ -191,6 +193,11 @@ void cframe::mostrarDashboard()
 
 }
 
+void cframe::ActualizarTabla()
+{
+
+}
+
 void cframe::setupDatabase()
 {
     QSqlDatabase db = QSqlDatabase::addDatabase("QODBC");
@@ -252,15 +259,16 @@ void cframe::insertValues()
 
 void cframe::on_botonlogearse_clicked()
 {
-    /*
+
     if(ui->txcontrasea->text()!="" && ui->txtusuario->text()!="")
         LogIn();
     else
         QMessageBox::critical(this, "Error", "Rellene todos los espacios");
-        */
+    /*
     ui->tabCentral->setTabEnabled(1,true);
     ui->tabCentral->setCurrentIndex(1);
     ui->tabCentral->setTabEnabled(0,false);
+    */
 }
 
 
@@ -390,7 +398,6 @@ void cframe::on_btn_buscar_archivo_clicked()
         }
 
         ui->le_filepath->setText(filePath);
-
     }
 }
 
