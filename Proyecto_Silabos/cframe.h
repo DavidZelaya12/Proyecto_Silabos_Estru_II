@@ -30,6 +30,7 @@ public:
     void MostrarUsuarios();
     void descargarArchivo();
     void mostrarDashboard();
+    void ActualizarTabla();
 
 private slots:
 

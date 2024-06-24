@@ -59,6 +59,7 @@ void cframe::LogIn()
                     ui->LE_CambiarNombre->setText(QString::fromStdString(nombre));
                     ui->LE_nombre->setText(QString::fromStdString(nombre));
                     ui->LE_Cargo->setText(QString::fromStdString(query.value(3).toString().toStdString()).toUpper());
+                    ActualizarTabla();
                     return;
                 }
             }
@@ -195,6 +196,38 @@ void cframe::mostrarDashboard()
 
 void cframe::ActualizarTabla()
 {
+
+    QString  Cargos []= {"DOCENTE","COORDINADOR","IEDD","CONSULTOR"};
+    QString CargoActual = ui->LE_Cargo->text();
+    QMessageBox::information(this,"",CargoActual);
+    QSqlQuery query;
+    if (query.exec("SELECT * FROM silabos")) {
+        ui->mostrar_revisiones->setRowCount(0);
+        ui->mostrar_revisiones->setColumnCount(4);
+        QStringList headers = {"Cargado por", "Facultad", "Clase", "Observacion"};
+        ui->mostrar_revisiones->setHorizontalHeaderLabels(headers);
+
+        int row = 0;
+
+        while (query.next()) {
+            ui->mostrar_revisiones->insertRow(row);
+            QString carga = query.value(0).toString();
+            QString clase = query.value(1).toString();
+            QString observaciones = query.value(2).toString();
+            QString facultad = query.value(3).toString();
+            //int revisiones = query.value(4).toInt();
+            int lvl = query.value(5).toInt();
+            if(Cargos[lvl] == CargoActual){
+                ui->mostrar_revisiones->setItem(row, 0, new QTableWidgetItem(carga));
+                ui->mostrar_revisiones->setItem(row, 1, new QTableWidgetItem(facultad));
+                ui->mostrar_revisiones->setItem(row, 2, new QTableWidgetItem(clase));
+                ui->mostrar_revisiones->setItem(row, 3, new QTableWidgetItem(observaciones));
+                row++;
+            }
+        }
+    } else {
+        QMessageBox::critical(this, "Query Execution Error", query.lastError().text());
+    }
 
 }
 
@@ -447,6 +480,7 @@ void cframe::on_AgregarProducto_clicked()
     ui->le_filepath->setText(fileName);
 
     QMessageBox::information(this, "Éxito", "Archivo subido exitosamente.");
+    ActualizarTabla();
 }
 
 
@@ -486,6 +520,55 @@ void cframe::on_pushButton_clicked()
         QMessageBox::information(this, "Éxito", "Archivo descargado exitosamente.");
     } else {
         QMessageBox::warning(this, "No encontrado", "No se encontró el archivo para la clase especificada.");
+    }
+}
+
+
+void cframe::on_Enviar_clicked()
+{
+    // Obtener el índice seleccionado del combo box
+            int index = ui->comboBox->currentIndex();
+            QString clase = ui->le_codigo_descargar->text();  // Asegúrate de que tienes una manera de obtener la clase
+            bool incrementar = (index == 0); // Supongamos que el índice 0 es para incrementar y el 1 es para decrementar
+
+            // Preparar la consulta para obtener el valor actual de numlvl
+            QSqlQuery query;
+            query.prepare("SELECT numlvl FROM silabos WHERE clase = :clase");
+            query.bindValue(":clase", clase);
+
+            if (!query.exec()) {
+                QMessageBox::critical(this, "Error", "Error al ejecutar la consulta de selección: " + query.lastError().text());
+                return;
+            }
+
+            if (query.next()) {
+                // Obtener el valor actual de numlvl
+                int numlvlActual = query.value(0).toInt();
+
+                // Calcular el nuevo valor de numlvl
+                int nuevoNumlvl = incrementar ? numlvlActual + 1 : numlvlActual - 1;
+
+                // Preparar la consulta para actualizar el valor de numlvl
+                query.prepare("UPDATE silabos SET numlvl = :nuevoNumlvl WHERE clase = :clase");
+                query.bindValue(":nuevoNumlvl", nuevoNumlvl);
+                query.bindValue(":clase", clase);
+
+                if (!query.exec()) {
+                    QMessageBox::critical(this, "Error", "Error al ejecutar la consulta de actualización: " + query.lastError().text());
+                    return;
+                }
+
+                QMessageBox::information(this, "Éxito", "El valor de numlvl se ha actualizado exitosamente.");
+            } else {
+                QMessageBox::warning(this, "No encontrado", "No se encontró la clase especificada.");
+            }
+}
+
+
+void cframe::on_TabIngresar_tabBarClicked(int index)
+{
+    if(index==2) {
+        mostrarDashboard();
     }
 }
 
