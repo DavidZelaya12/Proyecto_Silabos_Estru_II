@@ -15,5 +15,9 @@
         <file>Imagenes/CARGAR 2.png</file>
         <file>Imagenes/REVISION.png</file>
         <file>Imagenes/sdbvbus.png</file>
+        <file>Imagenes/FondoDashboard.png</file>
+        <file>Imagenes/FondoRevision.png</file>
+        <file>Imagenes/nuevoFOndo.png</file>
+        <file>Imagenes/Subheading (1).png</file>
     </qresource>
 </RCC>

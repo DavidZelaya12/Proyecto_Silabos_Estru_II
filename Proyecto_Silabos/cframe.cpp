@@ -448,6 +448,11 @@ void cframe::on_btn_buscar_archivo_clicked()
     classMap.insert("CCC208", "ProgramacionIII");
     classMap.insert("CCC210", "Ecologia");
     classMap.insert("CCC253", "Quimica");
+    classMap.insert("FIS201", "FisicaI");
+    classMap.insert("FIS202", "FisicaII");
+    classMap.insert("FIS203", "FisicaIII");
+    classMap.insert("MAT102", "Algebra");
+    classMap.insert("FIL101", "Filosofia");
     // Agregar más códigos de clase y nombres según sea necesario
 
     QString filePath = QFileDialog::getOpenFileName(this, "Seleccionar archivo PDF", QDir::homePath(), "Archivos PDF (*.pdf)");
@@ -581,42 +586,42 @@ void cframe::on_pushButton_clicked()
 void cframe::on_Enviar_clicked()
 {
     // Obtener el índice seleccionado del combo box
-            int index = ui->comboBox->currentIndex();
-            QString observacion = ui->le_observaciones->text();
-            QString clase = ui->le_codigo_descargar->text();  // Asegúrate de que tienes una manera de obtener la clase
-            bool incrementar = (index == 0); // Supongamos que el índice 0 es para incrementar y el 1 es para decrementar
+    int index = ui->comboBox->currentIndex();
+    QString observacion = ui->le_observaciones->text();
+    QString clase = ui->le_codigo_descargar->text();  // Asegúrate de que tienes una manera de obtener la clase
+    bool incrementar = (index == 0); // Supongamos que el índice 0 es para incrementar y el 1 es para decrementar
 
-            // Preparar la consulta para obtener el valor actual de numlvl
-            QSqlQuery query;
-            query.prepare("SELECT numlvl FROM silabos WHERE clase = :clase");
-            query.bindValue(":clase", clase);
+    // Preparar la consulta para obtener el valor actual de numlvl
+    QSqlQuery query;
+    query.prepare("SELECT numlvl FROM silabos WHERE clase = :clase");
+    query.bindValue(":clase", clase);
 
-            if (!query.exec()) {
-                QMessageBox::critical(this, "Error", "Error al ejecutar la consulta de selección: " + query.lastError().text());
-                return;
-            }
+    if (!query.exec()) {
+        QMessageBox::critical(this, "Error", "Error al ejecutar la consulta de selección: " + query.lastError().text());
+        return;
+    }
 
-            if (query.next()) {
-                // Obtener el valor actual de numlvl
-                int numlvlActual = query.value(0).toInt();
+    if (query.next()) {
+        // Obtener el valor actual de numlvl
+        int numlvlActual = query.value(0).toInt();
 
-                // Calcular el nuevo valor de numlvl
-                int nuevoNumlvl = incrementar ? numlvlActual + 1 : numlvlActual - 1;
+        // Calcular el nuevo valor de numlvl
+        int nuevoNumlvl = incrementar ? numlvlActual + 1 : numlvlActual - 1;
 
-                // Preparar la consulta para actualizar el valor de numlvl
-                query.prepare("UPDATE silabos SET numlvl = :nuevoNumlvl WHERE clase = :clase");
-                query.bindValue(":nuevoNumlvl", nuevoNumlvl);
-                query.bindValue(":clase", clase);
-                if (!query.exec()) {
-                    QMessageBox::critical(this, "Error", "Error al ejecutar la consulta de actualización: " + query.lastError().text());
-                    return;
-                }
-                ActualizarRevisiones(clase);
-                ActualizarObservacion(clase,observacion);
-                QMessageBox::information(this, "Éxito", "El valor de numlvl se ha actualizado exitosamente.");
-            } else {
-                QMessageBox::warning(this, "No encontrado", "No se encontró la clase especificada.");
-            }
+        // Preparar la consulta para actualizar el valor de numlvl
+        query.prepare("UPDATE silabos SET numlvl = :nuevoNumlvl WHERE clase = :clase");
+        query.bindValue(":nuevoNumlvl", nuevoNumlvl);
+        query.bindValue(":clase", clase);
+        if (!query.exec()) {
+            QMessageBox::critical(this, "Error", "Error al ejecutar la consulta de actualización: " + query.lastError().text());
+            return;
+        }
+        ActualizarRevisiones(clase);
+        ActualizarObservacion(clase,observacion);
+        QMessageBox::information(this, "Éxito", "El valor de numlvl se ha actualizado exitosamente.");
+    } else {
+        QMessageBox::warning(this, "No encontrado", "No se encontró la clase especificada.");
+    }
 }
 
 
@@ -632,5 +637,45 @@ void cframe::on_TabIngresar_tabBarClicked(int index)
 void cframe::on_mostrar_revisiones_cellClicked(int row, int column)
 {
     ui->le_codigo_descargar->setText(ui->mostrar_revisiones->item(row, 2)->text());
+}
+
+
+void cframe::on_BOTON_CERRAR_clicked()
+{
+    QMessageBox messageBox;
+    messageBox.setWindowTitle("Confirmar Cierre de Sesión");
+    messageBox.setText("¿Estás seguro de que quieres cerrar sesión?");
+    QPushButton *yesButton = messageBox.addButton(tr("Sí"), QMessageBox::YesRole);
+    QPushButton *noButton = messageBox.addButton(tr("No"), QMessageBox::NoRole);
+    messageBox.setIcon(QMessageBox::Question);
+
+    messageBox.exec();
+
+    if (messageBox.clickedButton() == yesButton) {
+        ui->tabCentral->setTabEnabled(0,true);
+        ui->tabCentral->setCurrentIndex(0);
+        ui->tabCentral->setTabEnabled(1,false);
+        //LimpiarEspacios();
+    }
+}
+
+
+void cframe::on_BOTON_CERRAR_2_clicked()
+{
+    QMessageBox messageBox;
+    messageBox.setWindowTitle("Confirmar Cierre de Sesión");
+    messageBox.setText("¿Estás seguro de que quieres cerrar sesión?");
+    QPushButton *yesButton = messageBox.addButton(tr("Sí"), QMessageBox::YesRole);
+    QPushButton *noButton = messageBox.addButton(tr("No"), QMessageBox::NoRole);
+    messageBox.setIcon(QMessageBox::Question);
+
+    messageBox.exec();
+
+    if (messageBox.clickedButton() == yesButton) {
+        ui->tabCentral->setTabEnabled(0,true);
+        ui->tabCentral->setCurrentIndex(0);
+        ui->tabCentral->setTabEnabled(1,false);
+        //LimpiarEspacios();
+    }
 }
 

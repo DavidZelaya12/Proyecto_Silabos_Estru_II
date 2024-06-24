@@ -58,6 +58,10 @@ private slots:
 
     void on_mostrar_revisiones_cellClicked(int row, int column);
 
+    void on_BOTON_CERRAR_clicked();
+
+    void on_BOTON_CERRAR_2_clicked();
+
 private:
     Ui::cframe *ui;
     void setupDatabase();

@@ -80,29 +80,6 @@
   <property name="autoFillBackground">
    <bool>false</bool>
   </property>
-  <widget class="QLabel" name="lbl_TokenTitulo">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>391</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <pointsize>10</pointsize>
-     <weight>75</weight>
-     <bold>true</bold>
-    </font>
-   </property>
-   <property name="text">
-    <string>Token</string>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignCenter</set>
-   </property>
-  </widget>
   <widget class="QLabel" name="lbl_Token">
    <property name="geometry">
     <rect>
@@ -118,7 +95,7 @@
     </font>
    </property>
    <property name="text">
-    <string>-</string>
+    <string/>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>
@@ -158,11 +135,10 @@
     <string/>
    </property>
    <property name="pixmap">
-    <pixmap resource="Imagenes.qrc">:/Imagenes/Subheading.png</pixmap>
+    <pixmap resource="Imagenes.qrc">:/Imagenes/Subheading (1).png</pixmap>
    </property>
   </widget>
   <zorder>label</zorder>
-  <zorder>lbl_TokenTitulo</zorder>
   <zorder>lbl_Token</zorder>
   <zorder>lbl_tiempo</zorder>
  </widget>
