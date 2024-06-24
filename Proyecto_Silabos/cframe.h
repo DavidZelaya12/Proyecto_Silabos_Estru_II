@@ -28,6 +28,7 @@ public:
     void RegistrarEmpleados();
     std::string LeerToken();
     void MostrarUsuarios();
+    void descargarArchivo(const QString& className);
 
 private slots:
 
@@ -43,13 +44,14 @@ private slots:
 
     void on_btn_buscar_archivo_clicked();
 
+    void on_AgregarProducto_clicked();
+
 private:
     Ui::cframe *ui;
     void setupDatabase();
     void createTable();
     Token a;
     void insertValues();
-    lista<int> *h;
 
 };
 

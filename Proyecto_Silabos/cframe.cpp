@@ -6,6 +6,7 @@
 #include <sstream>
 #include <QSqlError>
 #include <QFileDialog>
+#include <qstandardpaths.h>
 #include <QMap>
 
 cframe::cframe(QWidget *parent)
@@ -15,7 +16,7 @@ cframe::cframe(QWidget *parent)
     ui->setupUi(this);
     //CantInventario = obtenerPrimaryKey();
     setupDatabase();
-    //createTable();
+    createTable();
     //insertValues();
     //queryTable();
     // ActualizarTablas();
@@ -110,6 +111,62 @@ void cframe::MostrarUsuarios()
         }
 }
 
+void cframe::descargarArchivo(const QString &className)
+{
+    // Definir el mapa para los códigos de clase y sus nombres correspondientes
+    QMap<QString, QString> classMap;
+    classMap.insert("CCC104", "ProgramacionI");
+    classMap.insert("CCC105", "ProgramacionII");
+    classMap.insert("CCC208", "ProgramacionIII");
+    // Agregar más códigos de clase y nombres según sea necesario
+
+    // Buscar el código de clase correspondiente al nombre de clase dado
+    QString classCode;
+    for (auto it = classMap.begin(); it != classMap.end(); ++it) {
+        if (it.value().compare(className, Qt::CaseInsensitive) == 0) {
+            classCode = it.key();
+            break;
+        }
+    }
+
+    // Verificar si se encontró el código de clase
+    if (classCode.isEmpty()) {
+        QMessageBox::critical(this, "Error", "Nombre de clase no válido.");
+        return;
+    }
+
+    // Preparar la consulta de selección
+    QSqlQuery query;
+    query.prepare("SELECT archivo FROM personas WHERE clase = :clase");
+    query.bindValue(":clase", classCode);
+
+    // Ejecutar la consulta
+    if (!query.exec() || !query.next()) {
+        QMessageBox::critical(this, "Error", "No se pudo encontrar el archivo en la base de datos.");
+        return;
+    }
+
+    // Obtener los datos del archivo
+    QByteArray fileData = query.value(0).toByteArray();
+
+    // Obtener el escritorio del usuario
+    QString desktopPath = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
+    QString fileName = className + "_" + classCode + ".pdf";
+    QString fullFilePath = QDir(desktopPath).filePath(fileName);
+
+    // Guardar el archivo en el escritorio
+    QFile file(fullFilePath);
+    if (!file.open(QIODevice::WriteOnly)) {
+        QMessageBox::critical(this, "Error", "No se pudo guardar el archivo en el escritorio.");
+        return;
+    }
+    file.write(fileData);
+    file.close();
+
+    QMessageBox::information(this, "Éxito", "Archivo descargado exitosamente en " + fullFilePath);
+
+}
+
 void cframe::setupDatabase()
 {
     QSqlDatabase db = QSqlDatabase::addDatabase("QODBC");
@@ -129,16 +186,20 @@ void cframe::setupDatabase()
         QMessageBox::information(this, "Database Connection", "Successfully connected to the database!");
     }
 }
-/*
+
 void cframe::createTable()
 {
     QSqlQuery query;
     QString createTableSql = R"(
-        CREATE TABLE personas(
-            ID NVARCHAR(13) PRIMARY KEY,
-            nombre NVARCHAR(50),
-            contra NVARCHAR(15),
-            puesto NVARCHAR(15)
+        CREATE TABLE silabos(
+            ID INT PRIMARY KEY IDENTITY(1,1),
+            cargado NVARCHAR(40),
+            clase NVARCHAR(40),
+            observaciones NVARCHAR(255),
+            facultad NVARCHAR(50),
+            numrevisiones INT,
+            numlvl INT,
+            archivo VARBINARY(MAX)
         )
     )";
 
@@ -163,7 +224,7 @@ void cframe::insertValues()
         QMessageBox::information(this, "Insert Values", "Values inserted into 'personas' table successfully.");
     }
 }
-*/
+
 
 void cframe::on_botonlogearse_clicked()
 {
@@ -256,53 +317,85 @@ void cframe::on_cb_facultades_currentIndexChanged(int index)
 
 void cframe::on_btn_buscar_archivo_clicked()
 {
-        // Define the map for class codes and their corresponding names
-        QMap<QString, QString> classMap;
-        classMap.insert("CCC104", "ProgramacionI");
-        classMap.insert("CCC105", "ProgramacionII");
-        classMap.insert("CCC208", "ProgramacionIII");
-        // Add more class codes and names as needed
+    // Definir el mapa para los códigos de clase y sus nombres correspondientes
+    QMap<QString, QString> classMap;
+    classMap.insert("CCC104", "ProgramacionI");
+    classMap.insert("CCC105", "ProgramacionII");
+    classMap.insert("CCC208", "ProgramacionIII");
+    // Agregar más códigos de clase y nombres según sea necesario
 
-        QString filePath = QFileDialog::getOpenFileName(this, "Seleccionar archivo PDF", QDir::homePath(), "Archivos PDF (*.pdf)");
+    QString filePath = QFileDialog::getOpenFileName(this, "Seleccionar archivo PDF", QDir::homePath(), "Archivos PDF (*.pdf)");
 
-        if (!filePath.isEmpty()) {
-            // Obtener el nombre del archivo
-            QFileInfo fileInfo(filePath);
-            QString fileName = fileInfo.fileName();
+    if (!filePath.isEmpty()) {
+        // Obtener el nombre del archivo
+        QFileInfo fileInfo(filePath);
+        QString fileName = fileInfo.fileName();
 
-            // Definir la expresión regular para validar el nombre del archivo
-            QRegularExpression rx("^([A-Za-z]+[IV]*)_?(CCC\\d{3})\\.pdf$", QRegularExpression::CaseInsensitiveOption); // Formato: NombreClase_CCC123.pdf
+        // Definir la expresión regular para validar el nombre del archivo
+        QRegularExpression rx("^([A-Za-z]+[IV]*)_?(CCC\\d{3})\\.pdf$", QRegularExpression::CaseInsensitiveOption); // Formato: NombreClase_CCC123.pdf
 
-            // Validar el nombre del archivo según la expresión regular
-            QRegularExpressionMatch match = rx.match(fileName);
-            if (!match.hasMatch()) {
-                QMessageBox::critical(this, "Error", "El nombre del archivo no cumple con el formato deseado (NombreClase_CCC###.pdf).");
-                return;
-            }
-
-            // Obtener el nombre de la clase y el código del archivo
-            QString className = match.captured(1).trimmed();
-            QString classCode = match.captured(2);
-
-            // Verificar si el código de la clase existe en el mapa
-            if (!classMap.contains(classCode)) {
-                QMessageBox::critical(this, "Error", "Código de clase no válido.");
-                return;
-            }
-
-            // Verificar si el nombre de la clase coincide con el nombre esperado
-            if (classMap[classCode].compare(className, Qt::CaseInsensitive) != 0) {
-                QMessageBox::critical(this, "Error", "El nombre del archivo no coincide con el código de clase.");
-                return;
-            }
-
-            // Si el nombre del archivo cumple con el formato y el nombre de la clase es correcto, puedes continuar con el proceso
-            qDebug() << "Archivo PDF seleccionado:" << filePath;
-            qDebug() << "Nombre del archivo:" << fileName;
-
-            // Mostrar el nombre del archivo en el QLineEdit
-            ui->le_filepath->setText(fileName);
+        // Validar el nombre del archivo según la expresión regular
+        QRegularExpressionMatch match = rx.match(fileName);
+        if (!match.hasMatch()) {
+            QMessageBox::critical(this, "Error", "El nombre del archivo no cumple con el formato deseado (NombreClase_CCC###.pdf).");
+            return;
         }
+
+        // Obtener el nombre de la clase y el código del archivo
+        QString className = match.captured(1).trimmed();
+        QString classCode = match.captured(2);
+
+        // Verificar si el código de la clase existe en el mapa
+        if (!classMap.contains(classCode)) {
+            QMessageBox::critical(this, "Error", "Código de clase no válido.");
+            return;
+        }
+
+        // Verificar si el nombre de la clase coincide con el nombre esperado
+        if (classMap[classCode].compare(className, Qt::CaseInsensitive) != 0) {
+            QMessageBox::critical(this, "Error", "El nombre del archivo no coincide con el código de clase.");
+            return;
+        }
+
+        // Leer el archivo PDF en formato binario
+        QFile file(filePath);
+        if (!file.open(QIODevice::ReadOnly)) {
+            QMessageBox::critical(this, "Error", "No se pudo abrir el archivo.");
+            return;
+        }
+        QByteArray fileData = file.readAll();
+        file.close();
+
+        // Preparar la consulta de inserción
+        QSqlQuery query;
+        query.prepare("INSERT INTO silabos (cargado, clase, observaciones, facultad, numrevisiones, numlvl, archivo) "
+                      "VALUES (:cargado, :clase, :observaciones, :facultad, :numrevisiones, :numlvl, :archivo)");
+        //query.bindValue(":ID", 1); // Debes proporcionar el ID correcto
+        query.bindValue(":cargado", "2024-06-24"); // Proporciona la fecha o información correcta
+        query.bindValue(":clase", classCode);
+        query.bindValue(":observaciones", ""); // Proporciona las observaciones correctas
+        query.bindValue(":facultad", "Ingenieria"); // Proporciona la facultad correcta
+        query.bindValue(":numrevisiones", 0); // Proporciona el número de revisiones correcto
+        query.bindValue(":numlvl", 1); // Proporciona el nivel correcto
+        query.bindValue(":archivo", fileData);
+
+        // Ejecutar la consulta
+        if (!query.exec()) {
+            QMessageBox::critical(this, "Error", query.lastError().text());
+            return;
+        }
+
+        // Mostrar el nombre del archivo en el QLineEdit
+        ui->le_filepath->setText(fileName);
+
+        QMessageBox::information(this, "Éxito", "Archivo subido exitosamente.");
+    }
 }
 
+
+
+void cframe::on_AgregarProducto_clicked()
+{
+    this->descargarArchivo("ProgramacionI_CCC104.pdf");
+}
 
