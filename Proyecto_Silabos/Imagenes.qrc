@@ -12,5 +12,8 @@
         <file>Imagenes/RegistroCopeco.png</file>
         <file>Imagenes/FondoSilabos.png</file>
         <file>Imagenes/CARGAR.png</file>
+        <file>Imagenes/CARGAR 2.png</file>
+        <file>Imagenes/REVISION.png</file>
+        <file>Imagenes/sdbvbus.png</file>
     </qresource>
 </RCC>

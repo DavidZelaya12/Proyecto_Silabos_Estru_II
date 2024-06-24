@@ -46,6 +46,8 @@ private slots:
 
     void on_AgregarProducto_clicked();
 
+    void on_pushButton_clicked();
+
 private:
     Ui::cframe *ui;
     void setupDatabase();

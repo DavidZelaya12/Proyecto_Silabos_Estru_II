@@ -378,6 +378,45 @@ void cframe::on_btn_buscar_archivo_clicked()
 
 
 void cframe::on_AgregarProducto_clicked()
+{/*
+    QString classCode = ui->le_codigo_descargar->text(); // Obtén el código de clase de un QLineEdit, por ejemplo
+
+        QSqlQuery query;
+        query.prepare("SELECT archivo FROM silabos WHERE clase = :clase");
+        query.bindValue(":clase", classCode);
+
+        if (!query.exec()) {
+            QMessageBox::critical(this, "Error", query.lastError().text());
+            return;
+        }
+
+        if (query.next()) {
+            QByteArray fileData = query.value(0).toByteArray();
+
+            // Define the file path where the PDF will be saved
+            QString saveFilePath = QFileDialog::getSaveFileName(this, "Guardar archivo PDF", QDir::homePath(), "Archivos PDF (*.pdf)");
+            if (saveFilePath.isEmpty()) {
+                return; // El usuario canceló la operación
+            }
+
+            // Write the file data to the specified file path
+            QFile file(saveFilePath);
+            if (!file.open(QIODevice::WriteOnly)) {
+                QMessageBox::critical(this, "Error", "No se pudo guardar el archivo.");
+                return;
+            }
+
+            file.write(fileData);
+            file.close();
+
+            QMessageBox::information(this, "Éxito", "Archivo descargado exitosamente.");
+        } else {
+            QMessageBox::warning(this, "No encontrado", "No se encontró el archivo para la clase especificada.");
+        }*/
+}
+
+
+void cframe::on_pushButton_clicked()
 {
     QString classCode = ui->le_codigo_descargar->text(); // Obtén el código de clase de un QLineEdit, por ejemplo
 
