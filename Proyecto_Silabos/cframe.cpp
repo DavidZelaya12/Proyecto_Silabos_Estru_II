@@ -231,6 +231,44 @@ void cframe::ActualizarTabla()
 
 }
 
+void cframe::ActualizarRevisiones(QString clase)
+{
+    if(ui->LE_Cargo->text() == "CONSULTOR" && ui->comboBox->currentText() == "Rechazar") {
+        QSqlQuery query;
+
+        // Consulta para obtener el valor actual de numrevisiones
+        query.prepare("SELECT numrevisiones FROM silabos WHERE clase = :clase");
+        query.bindValue(":clase", clase);
+
+        if (!query.exec()) {
+            QMessageBox::critical(this, "Error", "Error al ejecutar la consulta de selección: " + query.lastError().text());
+            return;
+        }
+
+        int revisiones = 0;
+        if (query.next()) {
+            revisiones = query.value(0).toInt() + 1;
+        } else {
+            QMessageBox::critical(this, "Error", "No se encontró la clase especificada.");
+            return;
+        }
+
+        // Preparar y ejecutar la consulta de actualización
+        QSqlQuery updateQuery;
+        updateQuery.prepare("UPDATE silabos SET numrevisiones = :revisiones WHERE clase = :clase");
+        updateQuery.bindValue(":revisiones", revisiones);
+        updateQuery.bindValue(":clase", clase);
+
+        if (!updateQuery.exec()) {
+            QMessageBox::critical(this, "Error", "Error al ejecutar la consulta de actualización: " + updateQuery.lastError().text());
+            return;
+        }
+
+        QMessageBox::information(this, "Éxito", "Revisiones actualizadas exitosamente.");
+    }
+}
+
+
 void cframe::ActualizarObservacion(QString clase, QString nuevasObservaciones)
 {
     QSqlQuery query;
@@ -569,12 +607,11 @@ void cframe::on_Enviar_clicked()
                 query.prepare("UPDATE silabos SET numlvl = :nuevoNumlvl WHERE clase = :clase");
                 query.bindValue(":nuevoNumlvl", nuevoNumlvl);
                 query.bindValue(":clase", clase);
-
                 if (!query.exec()) {
                     QMessageBox::critical(this, "Error", "Error al ejecutar la consulta de actualización: " + query.lastError().text());
                     return;
                 }
-
+                ActualizarRevisiones(clase);
                 ActualizarObservacion(clase,observacion);
                 QMessageBox::information(this, "Éxito", "El valor de numlvl se ha actualizado exitosamente.");
             } else {
@@ -588,5 +625,12 @@ void cframe::on_TabIngresar_tabBarClicked(int index)
     if(index==2) {
         mostrarDashboard();
     }
+}
+
+
+
+void cframe::on_mostrar_revisiones_cellClicked(int row, int column)
+{
+    ui->le_codigo_descargar->setText(ui->mostrar_revisiones->item(row, 2)->text());
 }
 

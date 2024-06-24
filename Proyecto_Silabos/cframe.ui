@@ -281,6 +281,9 @@
         <property name="frame">
          <bool>false</bool>
         </property>
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
        </widget>
        <widget class="QPushButton" name="AgregarProducto">
         <property name="geometry">
@@ -485,6 +488,9 @@
           <width>261</width>
           <height>31</height>
          </rect>
+        </property>
+        <property name="readOnly">
+         <bool>true</bool>
         </property>
        </widget>
        <widget class="QLineEdit" name="le_observaciones">

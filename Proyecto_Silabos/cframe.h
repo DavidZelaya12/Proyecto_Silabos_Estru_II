@@ -31,6 +31,7 @@ public:
     void descargarArchivo();
     void mostrarDashboard();
     void ActualizarTabla();
+    void ActualizarRevisiones(QString clase);
     void ActualizarObservacion(QString clase, QString nuevasObservaciones);
 
 private slots:
@@ -54,6 +55,8 @@ private slots:
     void on_Enviar_clicked();
 
     void on_TabIngresar_tabBarClicked(int index);
+
+    void on_mostrar_revisiones_cellClicked(int row, int column);
 
 private:
     Ui::cframe *ui;
