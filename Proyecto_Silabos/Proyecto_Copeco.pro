@@ -15,6 +15,8 @@ SOURCES += \
 
 HEADERS += \
     cframe.h \
+    lista.h \
+    nodo.h \
     token.h
 
 FORMS += \

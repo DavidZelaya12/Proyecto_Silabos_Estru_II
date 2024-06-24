@@ -8,7 +8,7 @@
 #include <QMessageBox>
 #include <QDebug>
 #include <token.h>
-
+#include <lista.h>
 
 using std::string;
 
@@ -49,6 +49,7 @@ private:
     void createTable();
     Token a;
     void insertValues();
+    lista<int> *h;
 
 };
 
