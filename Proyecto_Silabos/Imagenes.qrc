@@ -11,5 +11,6 @@
         <file>Imagenes/Subheading.png</file>
         <file>Imagenes/RegistroCopeco.png</file>
         <file>Imagenes/FondoSilabos.png</file>
+        <file>Imagenes/CARGAR.png</file>
     </qresource>
 </RCC>
