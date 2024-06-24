@@ -60,6 +60,15 @@ void cframe::LogIn()
                     ui->LE_nombre->setText(QString::fromStdString(nombre));
                     ui->LE_Cargo->setText(QString::fromStdString(query.value(3).toString().toStdString()).toUpper());
                     ActualizarTabla();
+                    if(ui->LE_Cargo->text() == "DOCENTE"){
+                                            ui->TabIngresar->setTabEnabled(0,true);
+                                            ui->TabIngresar->setTabEnabled(1,false);
+                                            ui->TabIngresar->setTabEnabled(2,false);
+                                        }else{
+                                            ui->TabIngresar->setTabEnabled(0,false);
+                                            ui->TabIngresar->setTabEnabled(1,true);
+                                            ui->TabIngresar->setTabEnabled(2,true);
+                                        }
                     return;
                 }
             }
@@ -161,7 +170,7 @@ void cframe::mostrarDashboard()
     QSqlQuery query;
     if (query.exec("SELECT * FROM silabos")) {
         ui->TablesEntradas_2->setRowCount(0);
-        ui->TablesEntradas_2->setColumnCount(4);
+        ui->TablesEntradas_2->setColumnCount(5);
         QStringList headers = {"Cargado por", "Facultad", "Clase", "Observacion", "Estado"};
         ui->TablesEntradas_2->setHorizontalHeaderLabels(headers);
 
