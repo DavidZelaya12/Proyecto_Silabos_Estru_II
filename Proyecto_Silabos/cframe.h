@@ -28,7 +28,7 @@ public:
     void RegistrarEmpleados();
     std::string LeerToken();
     void MostrarUsuarios();
-    void descargarArchivo(const QString& className);
+    void descargarArchivo();
 
 private slots:
 
