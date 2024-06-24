@@ -235,9 +235,9 @@
        <widget class="QLineEdit" name="CodigoAgregar">
         <property name="geometry">
          <rect>
-          <x>90</x>
-          <y>340</y>
-          <width>271</width>
+          <x>630</x>
+          <y>230</y>
+          <width>281</width>
           <height>31</height>
          </rect>
         </property>
@@ -285,9 +285,9 @@
        <widget class="QPushButton" name="AgregarProducto">
         <property name="geometry">
          <rect>
-          <x>99</x>
-          <y>430</y>
-          <width>261</width>
+          <x>670</x>
+          <y>380</y>
+          <width>211</width>
           <height>41</height>
          </rect>
         </property>
@@ -311,17 +311,54 @@
          <string/>
         </property>
         <property name="pixmap">
-         <pixmap resource="Imagenes.qrc">:/Imagenes/íewnr9n(1).png</pixmap>
+         <pixmap resource="Imagenes.qrc">:/Imagenes/CARGAR.png</pixmap>
         </property>
        </widget>
        <widget class="QTableWidget" name="TableInventario">
         <property name="geometry">
          <rect>
-          <x>440</x>
-          <y>70</y>
-          <width>541</width>
-          <height>481</height>
+          <x>50</x>
+          <y>60</y>
+          <width>441</width>
+          <height>471</height>
          </rect>
+        </property>
+        <property name="palette">
+         <palette>
+          <active>
+           <colorrole role="Base">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>217</red>
+              <green>217</green>
+              <blue>217</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </active>
+          <inactive>
+           <colorrole role="Base">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>217</red>
+              <green>217</green>
+              <blue>217</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </inactive>
+          <disabled>
+           <colorrole role="Base">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>240</red>
+              <green>240</green>
+              <blue>240</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </disabled>
+         </palette>
         </property>
         <property name="frameShape">
          <enum>QFrame::NoFrame</enum>
@@ -346,9 +383,9 @@
        <widget class="QComboBox" name="cb_facultades">
         <property name="geometry">
          <rect>
-          <x>90</x>
-          <y>180</y>
-          <width>271</width>
+          <x>630</x>
+          <y>100</y>
+          <width>281</width>
           <height>24</height>
          </rect>
         </property>
@@ -376,8 +413,8 @@
        <widget class="QComboBox" name="cb_carreras">
         <property name="geometry">
          <rect>
-          <x>84</x>
-          <y>260</y>
+          <x>630</x>
+          <y>160</y>
           <width>281</width>
           <height>24</height>
          </rect>
@@ -386,8 +423,8 @@
        <widget class="QPushButton" name="btn_buscar_archivo">
         <property name="geometry">
          <rect>
-          <x>160</x>
-          <y>390</y>
+          <x>710</x>
+          <y>340</y>
           <width>121</width>
           <height>25</height>
          </rect>
@@ -399,10 +436,10 @@
        <widget class="QLineEdit" name="le_filepath">
         <property name="geometry">
          <rect>
-          <x>80</x>
-          <y>480</y>
-          <width>291</width>
-          <height>24</height>
+          <x>630</x>
+          <y>300</y>
+          <width>281</width>
+          <height>31</height>
          </rect>
         </property>
        </widget>
