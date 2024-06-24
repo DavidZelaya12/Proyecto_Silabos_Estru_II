@@ -231,6 +231,22 @@ void cframe::ActualizarTabla()
 
 }
 
+void cframe::ActualizarObservacion(QString clase, QString nuevasObservaciones)
+{
+    QSqlQuery query;
+    query.prepare("UPDATE silabos SET observaciones = :observaciones WHERE clase = :clase");
+    query.bindValue(":observaciones", nuevasObservaciones);
+    query.bindValue(":clase", clase);
+
+    if (!query.exec()) {
+        QMessageBox::critical(this, "Error", query.lastError().text());
+        return;
+    }
+
+    QMessageBox::information(this, "Éxito", "Observaciones actualizadas exitosamente.");
+
+}
+
 void cframe::setupDatabase()
 {
     QSqlDatabase db = QSqlDatabase::addDatabase("QODBC");
@@ -528,6 +544,7 @@ void cframe::on_Enviar_clicked()
 {
     // Obtener el índice seleccionado del combo box
             int index = ui->comboBox->currentIndex();
+            QString observacion = ui->le_observaciones->text();
             QString clase = ui->le_codigo_descargar->text();  // Asegúrate de que tienes una manera de obtener la clase
             bool incrementar = (index == 0); // Supongamos que el índice 0 es para incrementar y el 1 es para decrementar
 
@@ -558,6 +575,7 @@ void cframe::on_Enviar_clicked()
                     return;
                 }
 
+                ActualizarObservacion(clase,observacion);
                 QMessageBox::information(this, "Éxito", "El valor de numlvl se ha actualizado exitosamente.");
             } else {
                 QMessageBox::warning(this, "No encontrado", "No se encontró la clase especificada.");
