@@ -26,7 +26,7 @@ cframe::cframe(QWidget *parent)
     mostrarDashboard();
 
     ui->tabCentral->setTabEnabled(1, false);
-    std::cout<<"adios";
+    std::cout<<"hola";
 }
 
 
