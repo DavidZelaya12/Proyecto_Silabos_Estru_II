@@ -23,6 +23,7 @@ cframe::cframe(QWidget *parent)
 
     //RegistrarEmpleados();
     MostrarUsuarios();
+    mostrarDashboard();
 
     ui->tabCentral->setTabEnabled(1, false);
     std::cout<<"adios";
@@ -55,6 +56,7 @@ void cframe::LogIn()
                     ui->tabCentral->setTabEnabled(1,true);
                     ui->tabCentral->setCurrentIndex(1);
                     ui->tabCentral->setTabEnabled(0,false);
+                    ui->LE_CambiarNombre->setText(QString::fromStdString(nombre));
                     return;
                 }
             }
@@ -68,20 +70,20 @@ void cframe::RegistrarEmpleados()
     QSqlQuery query;
     QStringList queries = {
         R"(
-            INSERT INTO personas (id, nombre, contra, puesto) VALUES
-            ('0501199067890', 'Virgilio Fuentes', 'docente123', 'docente')
+        INSERT INTO personas (id, nombre, contra, puesto) VALUES
+        ('0501199067890', 'Virgilio Fuentes', 'docente123', 'docente')
         )",
         R"(
-            INSERT INTO personas (id, nombre, contra, puesto) VALUES
-            ('0501199012345', 'David Zelaya', 'coordinador123', 'coordinador')
+        INSERT INTO personas (id, nombre, contra, puesto) VALUES
+        ('0501199012345', 'David Zelaya', 'coordinador123', 'coordinador')
         )",
         R"(
-            INSERT INTO personas (id, nombre, contra, puesto) VALUES
-            ('0401198098765', 'Daniel Lorenzo', 'iedd123', 'iedd')
+        INSERT INTO personas (id, nombre, contra, puesto) VALUES
+        ('0401198098765', 'Daniel Lorenzo', 'iedd123', 'iedd')
         )",
         R"(
-            INSERT INTO personas (id, nombre, contra, puesto) VALUES
-            ('0501199045678', 'Abraham Reyes', 'consultor123', 'consultor')
+        INSERT INTO personas (id, nombre, contra, puesto) VALUES
+        ('0501199045678', 'Abraham Reyes', 'consultor123', 'consultor')
         )"
     };
 
@@ -98,55 +100,94 @@ void cframe::RegistrarEmpleados()
 void cframe::MostrarUsuarios()
 {
     QSqlQuery query;
-        if (query.exec("SELECT * FROM personas")) {
-            while (query.next()) {
-                QString ID = query.value(0).toString();
-                QString nombre = query.value(1).toString();
-                QString puesto = query.value(3).toString();
+    if (query.exec("SELECT * FROM personas")) {
+        while (query.next()) {
+            QString ID = query.value(0).toString();
+            QString nombre = query.value(1).toString();
+            QString puesto = query.value(3).toString();
 
-                qDebug() << "ID:" << ID << ", Nombre:" << nombre << ", Puesto:" << puesto;
-            }
-        } else {
-            QMessageBox::critical(this, "Query Execution Error", query.lastError().text());
+            qDebug() << "ID:" << ID << ", Nombre:" << nombre << ", Puesto:" << puesto;
         }
+    } else {
+        QMessageBox::critical(this, "Query Execution Error", query.lastError().text());
+    }
 }
 
 void cframe::descargarArchivo()
 {
     QString classCode = ui->le_filepath->text(); // Obtén el código de clase de un QLineEdit, por ejemplo
 
-        QSqlQuery query;
-        query.prepare("SELECT archivo FROM silabos WHERE clase = :clase");
-        query.bindValue(":clase", classCode);
+    QSqlQuery query;
+    query.prepare("SELECT archivo FROM silabos WHERE clase = :clase");
+    query.bindValue(":clase", classCode);
 
-        if (!query.exec()) {
-            QMessageBox::critical(this, "Error", query.lastError().text());
+    if (!query.exec()) {
+        QMessageBox::critical(this, "Error", query.lastError().text());
+        return;
+    }
+
+    if (query.next()) {
+        QByteArray fileData = query.value(0).toByteArray();
+
+        // Define the file path where the PDF will be saved
+        QString saveFilePath = QFileDialog::getSaveFileName(this, "Guardar archivo PDF", QDir::homePath(), "Archivos PDF (*.pdf)");
+        if (saveFilePath.isEmpty()) {
+            return; // El usuario canceló la operación
+        }
+
+        // Write the file data to the specified file path
+        QFile file(saveFilePath);
+        if (!file.open(QIODevice::WriteOnly)) {
+            QMessageBox::critical(this, "Error", "No se pudo guardar el archivo.");
             return;
         }
 
-        if (query.next()) {
-            QByteArray fileData = query.value(0).toByteArray();
+        file.write(fileData);
+        file.close();
 
-            // Define the file path where the PDF will be saved
-            QString saveFilePath = QFileDialog::getSaveFileName(this, "Guardar archivo PDF", QDir::homePath(), "Archivos PDF (*.pdf)");
-            if (saveFilePath.isEmpty()) {
-                return; // El usuario canceló la operación
-            }
+        QMessageBox::information(this, "Éxito", "Archivo descargado exitosamente.");
+    } else {
+        QMessageBox::warning(this, "No encontrado", "No se encontró el archivo para la clase especificada.");
+    }
 
-            // Write the file data to the specified file path
-            QFile file(saveFilePath);
-            if (!file.open(QIODevice::WriteOnly)) {
-                QMessageBox::critical(this, "Error", "No se pudo guardar el archivo.");
-                return;
-            }
+}
 
-            file.write(fileData);
-            file.close();
+void cframe::mostrarDashboard()
+{
 
-            QMessageBox::information(this, "Éxito", "Archivo descargado exitosamente.");
-        } else {
-            QMessageBox::warning(this, "No encontrado", "No se encontró el archivo para la clase especificada.");
+    QSqlQuery query;
+    if (query.exec("SELECT * FROM silabos")) {
+        ui->TablesEntradas_2->setRowCount(0);
+        ui->TablesEntradas_2->setColumnCount(4);
+        QStringList headers = {"Cargado por", "Facultad", "Clase", "Observacion", "Estado"};
+        ui->TablesEntradas_2->setHorizontalHeaderLabels(headers);
+
+        int row = 0;
+        while (query.next()) {
+            ui->TablesEntradas_2->insertRow(row);
+
+            QString carga = query.value(0).toString();
+            QString clase = query.value(1).toString();
+            QString observaciones = query.value(2).toString();
+            QString facultad = query.value(3).toString();
+            int revisiones = query.value(4).toInt();
+            int lvl = query.value(5).toInt();
+            QString estado;
+
+            estado = (lvl==5) ? "Aprobado" :"En proceso" ;
+            if(revisiones>2)
+                estado = "Rechazado";
+
+            ui->TablesEntradas_2->setItem(row, 0, new QTableWidgetItem(carga));
+            ui->TablesEntradas_2->setItem(row, 1, new QTableWidgetItem(facultad));
+            ui->TablesEntradas_2->setItem(row, 2, new QTableWidgetItem(clase));
+            ui->TablesEntradas_2->setItem(row, 3, new QTableWidgetItem(observaciones));
+            ui->TablesEntradas_2->setItem(row, 4, new QTableWidgetItem(estado));
+            row++;
         }
+    } else {
+        QMessageBox::critical(this, "Query Execution Error", query.lastError().text());
+    }
 
 }
 
@@ -211,10 +252,15 @@ void cframe::insertValues()
 
 void cframe::on_botonlogearse_clicked()
 {
+    /*
     if(ui->txcontrasea->text()!="" && ui->txtusuario->text()!="")
         LogIn();
     else
         QMessageBox::critical(this, "Error", "Rellene todos los espacios");
+        */
+    ui->tabCentral->setTabEnabled(1,true);
+    ui->tabCentral->setCurrentIndex(1);
+    ui->tabCentral->setTabEnabled(0,false);
 }
 
 
@@ -305,6 +351,8 @@ void cframe::on_btn_buscar_archivo_clicked()
     classMap.insert("CCC104", "ProgramacionI");
     classMap.insert("CCC105", "ProgramacionII");
     classMap.insert("CCC208", "ProgramacionIII");
+    classMap.insert("CCC210", "Ecologia");
+    classMap.insert("CCC253", "Quimica");
     // Agregar más códigos de clase y nombres según sea necesario
 
     QString filePath = QFileDialog::getOpenFileName(this, "Seleccionar archivo PDF", QDir::homePath(), "Archivos PDF (*.pdf)");
@@ -327,6 +375,7 @@ void cframe::on_btn_buscar_archivo_clicked()
         // Obtener el nombre de la clase y el código del archivo
         QString className = match.captured(1).trimmed();
         QString classCode = match.captured(2);
+        ui->falsedad->setText(classCode);
 
         // Verificar si el código de la clase existe en el mapa
         if (!classMap.contains(classCode)) {
@@ -340,117 +389,96 @@ void cframe::on_btn_buscar_archivo_clicked()
             return;
         }
 
-        // Leer el archivo PDF en formato binario
-        QFile file(filePath);
-        if (!file.open(QIODevice::ReadOnly)) {
-            QMessageBox::critical(this, "Error", "No se pudo abrir el archivo.");
-            return;
-        }
-        QByteArray fileData = file.readAll();
-        file.close();
+        ui->le_filepath->setText(filePath);
 
-        // Preparar la consulta de inserción
-        QSqlQuery query;
-        query.prepare("INSERT INTO silabos (cargado, clase, observaciones, facultad, numrevisiones, numlvl, archivo) "
-                      "VALUES (:cargado, :clase, :observaciones, :facultad, :numrevisiones, :numlvl, :archivo)");
-        //query.bindValue(":ID", 1); // Debes proporcionar el ID correcto
-        query.bindValue(":cargado", "2024-06-24"); // Proporciona la fecha o información correcta
-        query.bindValue(":clase", classCode);
-        query.bindValue(":observaciones", ""); // Proporciona las observaciones correctas
-        query.bindValue(":facultad", "Ingenieria"); // Proporciona la facultad correcta
-        query.bindValue(":numrevisiones", 0); // Proporciona el número de revisiones correcto
-        query.bindValue(":numlvl", 1); // Proporciona el nivel correcto
-        query.bindValue(":archivo", fileData);
-
-        // Ejecutar la consulta
-        if (!query.exec()) {
-            QMessageBox::critical(this, "Error", query.lastError().text());
-            return;
-        }
-
-        // Mostrar el nombre del archivo en el QLineEdit
-        ui->le_filepath->setText(fileName);
-
-        QMessageBox::information(this, "Éxito", "Archivo subido exitosamente.");
     }
 }
 
 
 
 void cframe::on_AgregarProducto_clicked()
-{/*
-    QString classCode = ui->le_codigo_descargar->text(); // Obtén el código de clase de un QLineEdit, por ejemplo
+{
+    // Leer el archivo PDF en formato binari
+    QString filePath = ui->le_filepath->text();
+    QFileInfo fileInfo(filePath);
+    QString fileName = fileInfo.fileName();
 
-        QSqlQuery query;
-        query.prepare("SELECT archivo FROM silabos WHERE clase = :clase");
-        query.bindValue(":clase", classCode);
+    QString classCode = ui->falsedad->text();
+    QString cargado = ui->LE_CambiarNombre->text();
+    QString facultad = ui->cb_facultades->currentText();
+    QMessageBox::information(this,"",facultad);
 
-        if (!query.exec()) {
-            QMessageBox::critical(this, "Error", query.lastError().text());
-            return;
-        }
 
-        if (query.next()) {
-            QByteArray fileData = query.value(0).toByteArray();
+    QFile file(filePath);
+    if (!file.open(QIODevice::ReadOnly)) {
+        QMessageBox::critical(this, "Error", "No se pudo abrir el archivo.");
+        return;
+    }
+    QByteArray fileData = file.readAll();
+    file.close();
 
-            // Define the file path where the PDF will be saved
-            QString saveFilePath = QFileDialog::getSaveFileName(this, "Guardar archivo PDF", QDir::homePath(), "Archivos PDF (*.pdf)");
-            if (saveFilePath.isEmpty()) {
-                return; // El usuario canceló la operación
-            }
+    // Preparar la consulta de inserción
+    QSqlQuery query;
+    query.prepare("INSERT INTO silabos (cargado, clase, observaciones, facultad, numrevisiones, numlvl, archivo) "
+                  "VALUES (:cargado, :clase, :observaciones, :facultad, :numrevisiones, :numlvl, :archivo)");
+    //query.bindValue(":ID", 1); // Debes proporcionar el ID correcto
+    query.bindValue(":cargado", cargado); // Proporciona la fecha o información correcta
+    query.bindValue(":clase", classCode);
+    query.bindValue(":observaciones", ""); // Proporciona las observaciones correctas
+    query.bindValue(":facultad", facultad); // Proporciona la facultad correcta
+    query.bindValue(":numrevisiones", 0); // Proporciona el número de revisiones correcto
+    query.bindValue(":numlvl", 1); // Proporciona el nivel correcto
+    query.bindValue(":archivo", fileData);
 
-            // Write the file data to the specified file path
-            QFile file(saveFilePath);
-            if (!file.open(QIODevice::WriteOnly)) {
-                QMessageBox::critical(this, "Error", "No se pudo guardar el archivo.");
-                return;
-            }
+    // Ejecutar la consulta
+    if (!query.exec()) {
+        QMessageBox::critical(this, "Error", query.lastError().text());
+        return;
+    }
 
-            file.write(fileData);
-            file.close();
+    // Mostrar el nombre del archivo en el QLineEdit
+    ui->le_filepath->setText(fileName);
 
-            QMessageBox::information(this, "Éxito", "Archivo descargado exitosamente.");
-        } else {
-            QMessageBox::warning(this, "No encontrado", "No se encontró el archivo para la clase especificada.");
-        }*/
+    QMessageBox::information(this, "Éxito", "Archivo subido exitosamente.");
 }
+
 
 
 void cframe::on_pushButton_clicked()
 {
     QString classCode = ui->le_codigo_descargar->text(); // Obtén el código de clase de un QLineEdit, por ejemplo
 
-        QSqlQuery query;
-        query.prepare("SELECT archivo FROM silabos WHERE clase = :clase");
-        query.bindValue(":clase", classCode);
+    QSqlQuery query;
+    query.prepare("SELECT archivo FROM silabos WHERE clase = :clase");
+    query.bindValue(":clase", classCode);
 
-        if (!query.exec()) {
-            QMessageBox::critical(this, "Error", query.lastError().text());
+    if (!query.exec()) {
+        QMessageBox::critical(this, "Error", query.lastError().text());
+        return;
+    }
+
+    if (query.next()) {
+        QByteArray fileData = query.value(0).toByteArray();
+
+        // Define the file path where the PDF will be saved
+        QString saveFilePath = QFileDialog::getSaveFileName(this, "Guardar archivo PDF", QDir::homePath(), "Archivos PDF (*.pdf)");
+        if (saveFilePath.isEmpty()) {
+            return; // El usuario canceló la operación
+        }
+
+        // Write the file data to the specified file path
+        QFile file(saveFilePath);
+        if (!file.open(QIODevice::WriteOnly)) {
+            QMessageBox::critical(this, "Error", "No se pudo guardar el archivo.");
             return;
         }
 
-        if (query.next()) {
-            QByteArray fileData = query.value(0).toByteArray();
+        file.write(fileData);
+        file.close();
 
-            // Define the file path where the PDF will be saved
-            QString saveFilePath = QFileDialog::getSaveFileName(this, "Guardar archivo PDF", QDir::homePath(), "Archivos PDF (*.pdf)");
-            if (saveFilePath.isEmpty()) {
-                return; // El usuario canceló la operación
-            }
-
-            // Write the file data to the specified file path
-            QFile file(saveFilePath);
-            if (!file.open(QIODevice::WriteOnly)) {
-                QMessageBox::critical(this, "Error", "No se pudo guardar el archivo.");
-                return;
-            }
-
-            file.write(fileData);
-            file.close();
-
-            QMessageBox::information(this, "Éxito", "Archivo descargado exitosamente.");
-        } else {
-            QMessageBox::warning(this, "No encontrado", "No se encontró el archivo para la clase especificada.");
-        }
+        QMessageBox::information(this, "Éxito", "Archivo descargado exitosamente.");
+    } else {
+        QMessageBox::warning(this, "No encontrado", "No se encontró el archivo para la clase especificada.");
+    }
 }
 

@@ -29,6 +29,7 @@ public:
     std::string LeerToken();
     void MostrarUsuarios();
     void descargarArchivo();
+    void mostrarDashboard();
 
 private slots:
 
